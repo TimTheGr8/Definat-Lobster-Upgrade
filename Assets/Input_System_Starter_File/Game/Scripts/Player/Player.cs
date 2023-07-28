@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Game.Scripts.LiveObjects;
 using Cinemachine;
+using UnityEngine.InputSystem;
 
 namespace Game.Scripts.Player
 {
@@ -22,6 +23,7 @@ namespace Game.Scripts.Player
         [SerializeField]
         private GameObject _model;
 
+        private PlayerInputs _input;
 
         private void OnEnable()
         {
@@ -37,6 +39,8 @@ namespace Game.Scripts.Player
 
         private void Start()
         {
+            InitializeInputs();
+
             _controller = GetComponent<CharacterController>();
 
             if (_controller == null)
@@ -51,34 +55,29 @@ namespace Game.Scripts.Player
         private void Update()
         {
             if (_canMove == true)
-                CalcutateMovement();
-
+                Move();
         }
 
-        private void CalcutateMovement()
+        private void Move()
         {
             _playerGrounded = _controller.isGrounded;
-            float h = Input.GetAxisRaw("Horizontal");
-            float v = Input.GetAxisRaw("Vertical");
+            var move = _input.Player.Movement.ReadValue<Vector2>();
 
-            transform.Rotate(transform.up, h);
+            transform.Rotate(transform.up, move.x);
 
-            var direction = transform.forward * v;
+            var direction = transform.forward * move.y;
             var velocity = direction * _speed;
 
-
             _anim.SetFloat("Speed", Mathf.Abs(velocity.magnitude));
-
-
+            
             if (_playerGrounded)
                 velocity.y = 0f;
             if (!_playerGrounded)
             {
                 velocity.y += -20f * Time.deltaTime;
             }
-            
-            _controller.Move(velocity * Time.deltaTime);                      
 
+            _controller.Move(velocity * Time.deltaTime);
         }
 
         private void InteractableZone_onZoneInteractionComplete(InteractableZone zone)
@@ -115,6 +114,13 @@ namespace Game.Scripts.Player
         private void TriggerExplosive()
         {
             _detonator.TriggerExplosion();
+        }
+
+
+        private void InitializeInputs()
+        {
+            _input = new PlayerInputs();
+            _input.Player.Enable();
         }
 
         private void OnDisable()
