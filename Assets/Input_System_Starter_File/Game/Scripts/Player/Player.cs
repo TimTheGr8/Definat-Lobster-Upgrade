@@ -55,10 +55,10 @@ namespace Game.Scripts.Player
         private void Update()
         {
             if (_canMove == true)
-                Move();
+                CalcutateMovement();
         }
 
-        private void Move()
+        private void CalcutateMovement()
         {
             _playerGrounded = _controller.isGrounded;
             var move = _input.Player.Movement.ReadValue<Vector2>();
@@ -68,8 +68,10 @@ namespace Game.Scripts.Player
             var direction = transform.forward * move.y;
             var velocity = direction * _speed;
 
+
             _anim.SetFloat("Speed", Mathf.Abs(velocity.magnitude));
-            
+
+
             if (_playerGrounded)
                 velocity.y = 0f;
             if (!_playerGrounded)
@@ -78,6 +80,7 @@ namespace Game.Scripts.Player
             }
 
             _controller.Move(velocity * Time.deltaTime);
+
         }
 
         private void InteractableZone_onZoneInteractionComplete(InteractableZone zone)
