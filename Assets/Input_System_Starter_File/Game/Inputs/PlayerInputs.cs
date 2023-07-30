@@ -35,6 +35,15 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""24f6edfe-8494-4557-8fb2-2a8f4edfc36d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -92,6 +101,65 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ae04f127-55a9-4270-98b8-04429701ec34"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""SecurityCameras"",
+            ""id"": ""d0d62bdf-52d1-47f6-b5f1-d2c4592357b0"",
+            ""actions"": [
+                {
+                    ""name"": ""SwitchCameras"",
+                    ""type"": ""Button"",
+                    ""id"": ""8d373023-6dbf-4657-90c6-3e9a33340097"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DisableCameras"",
+                    ""type"": ""Button"",
+                    ""id"": ""9fe94ff8-d450-4728-966b-a772de636bcf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""2c931d1c-7700-4d74-9914-cf292b5aa51f"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchCameras"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5120927d-f03e-441d-a380-af89978b4a38"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DisableCameras"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -101,6 +169,11 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
+        m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        // SecurityCameras
+        m_SecurityCameras = asset.FindActionMap("SecurityCameras", throwIfNotFound: true);
+        m_SecurityCameras_SwitchCameras = m_SecurityCameras.FindAction("SwitchCameras", throwIfNotFound: true);
+        m_SecurityCameras_DisableCameras = m_SecurityCameras.FindAction("DisableCameras", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -163,11 +236,13 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Movement;
+    private readonly InputAction m_Player_Interact;
     public struct PlayerActions
     {
         private @PlayerInputs m_Wrapper;
         public PlayerActions(@PlayerInputs wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
+        public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -180,6 +255,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @Movement.started += instance.OnMovement;
             @Movement.performed += instance.OnMovement;
             @Movement.canceled += instance.OnMovement;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -187,6 +265,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @Movement.started -= instance.OnMovement;
             @Movement.performed -= instance.OnMovement;
             @Movement.canceled -= instance.OnMovement;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -204,8 +285,68 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // SecurityCameras
+    private readonly InputActionMap m_SecurityCameras;
+    private List<ISecurityCamerasActions> m_SecurityCamerasActionsCallbackInterfaces = new List<ISecurityCamerasActions>();
+    private readonly InputAction m_SecurityCameras_SwitchCameras;
+    private readonly InputAction m_SecurityCameras_DisableCameras;
+    public struct SecurityCamerasActions
+    {
+        private @PlayerInputs m_Wrapper;
+        public SecurityCamerasActions(@PlayerInputs wrapper) { m_Wrapper = wrapper; }
+        public InputAction @SwitchCameras => m_Wrapper.m_SecurityCameras_SwitchCameras;
+        public InputAction @DisableCameras => m_Wrapper.m_SecurityCameras_DisableCameras;
+        public InputActionMap Get() { return m_Wrapper.m_SecurityCameras; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(SecurityCamerasActions set) { return set.Get(); }
+        public void AddCallbacks(ISecurityCamerasActions instance)
+        {
+            if (instance == null || m_Wrapper.m_SecurityCamerasActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_SecurityCamerasActionsCallbackInterfaces.Add(instance);
+            @SwitchCameras.started += instance.OnSwitchCameras;
+            @SwitchCameras.performed += instance.OnSwitchCameras;
+            @SwitchCameras.canceled += instance.OnSwitchCameras;
+            @DisableCameras.started += instance.OnDisableCameras;
+            @DisableCameras.performed += instance.OnDisableCameras;
+            @DisableCameras.canceled += instance.OnDisableCameras;
+        }
+
+        private void UnregisterCallbacks(ISecurityCamerasActions instance)
+        {
+            @SwitchCameras.started -= instance.OnSwitchCameras;
+            @SwitchCameras.performed -= instance.OnSwitchCameras;
+            @SwitchCameras.canceled -= instance.OnSwitchCameras;
+            @DisableCameras.started -= instance.OnDisableCameras;
+            @DisableCameras.performed -= instance.OnDisableCameras;
+            @DisableCameras.canceled -= instance.OnDisableCameras;
+        }
+
+        public void RemoveCallbacks(ISecurityCamerasActions instance)
+        {
+            if (m_Wrapper.m_SecurityCamerasActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ISecurityCamerasActions instance)
+        {
+            foreach (var item in m_Wrapper.m_SecurityCamerasActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_SecurityCamerasActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public SecurityCamerasActions @SecurityCameras => new SecurityCamerasActions(this);
     public interface IPlayerActions
     {
         void OnMovement(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
+    }
+    public interface ISecurityCamerasActions
+    {
+        void OnSwitchCameras(InputAction.CallbackContext context);
+        void OnDisableCameras(InputAction.CallbackContext context);
     }
 }

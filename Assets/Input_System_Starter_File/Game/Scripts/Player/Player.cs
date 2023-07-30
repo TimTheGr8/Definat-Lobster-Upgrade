@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Game.Scripts.LiveObjects;
 using Cinemachine;
-using UnityEngine.InputSystem;
 
 namespace Game.Scripts.Player
 {
@@ -23,8 +22,6 @@ namespace Game.Scripts.Player
         [SerializeField]
         private GameObject _model;
 
-        private PlayerInputs _input;
-
         private void OnEnable()
         {
             InteractableZone.onZoneInteractionComplete += InteractableZone_onZoneInteractionComplete;
@@ -39,7 +36,6 @@ namespace Game.Scripts.Player
 
         private void Start()
         {
-            InitializeInputs();
 
             _controller = GetComponent<CharacterController>();
 
@@ -52,34 +48,30 @@ namespace Game.Scripts.Player
                 Debug.Log("Failed to connect the Animator");
         }
 
-        private void Update()
+        public void CalcutateMovement(Vector2 input)
         {
-            if (_canMove == true)
-                CalcutateMovement();
-        }
-
-        private void CalcutateMovement()
-        {
-            _playerGrounded = _controller.isGrounded;
-            var move = _input.Player.Movement.ReadValue<Vector2>();
-
-            transform.Rotate(transform.up, move.x);
-
-            var direction = transform.forward * move.y;
-            var velocity = direction * _speed;
-
-
-            _anim.SetFloat("Speed", Mathf.Abs(velocity.magnitude));
-
-
-            if (_playerGrounded)
-                velocity.y = 0f;
-            if (!_playerGrounded)
+            if (_canMove)
             {
-                velocity.y += -20f * Time.deltaTime;
-            }
+                _playerGrounded = _controller.isGrounded;
 
-            _controller.Move(velocity * Time.deltaTime);
+                transform.Rotate(transform.up, input.x);
+
+                var direction = transform.forward * input.y;
+                var velocity = direction * _speed;
+
+
+                _anim.SetFloat("Speed", Mathf.Abs(velocity.magnitude));
+
+
+                if (_playerGrounded)
+                    velocity.y = 0f;
+                if (!_playerGrounded)
+                {
+                    velocity.y += -20f * Time.deltaTime;
+                }
+
+                _controller.Move(velocity * Time.deltaTime);
+            }
 
         }
 
@@ -117,13 +109,6 @@ namespace Game.Scripts.Player
         private void TriggerExplosive()
         {
             _detonator.TriggerExplosion();
-        }
-
-
-        private void InitializeInputs()
-        {
-            _input = new PlayerInputs();
-            _input.Player.Enable();
         }
 
         private void OnDisable()

@@ -19,9 +19,13 @@ namespace Game.Scripts.LiveObjects
         private int _activeCamera = 0;
         [SerializeField]
         private InteractableZone _interactableZone;
+        [SerializeField]
+        private InputManager _inputManager;
 
         public static event Action onHackComplete;
         public static event Action onHackEnded;
+
+        private bool _hackingInProgress = false;
 
         private void OnEnable()
         {
@@ -29,30 +33,30 @@ namespace Game.Scripts.LiveObjects
             InteractableZone.onHoldEnded += InteractableZone_onHoldEnded;
         }
 
-        private void Update()
+        public void SwitchCamera()
         {
-            if (_hacked == true)
+            if (_hacked)
             {
-                if (Input.GetKeyDown(KeyCode.E))
-                {
-                    var previous = _activeCamera;
-                    _activeCamera++;
+                var previous = _activeCamera;
+                _activeCamera++;
 
 
-                    if (_activeCamera >= _cameras.Length)
-                        _activeCamera = 0;
+                if (_activeCamera >= _cameras.Length)
+                    _activeCamera = 0;
 
 
-                    _cameras[_activeCamera].Priority = 11;
-                    _cameras[previous].Priority = 9;
-                }
+                _cameras[_activeCamera].Priority = 11;
+                _cameras[previous].Priority = 9;
+            }
+        }
 
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    _hacked = false;
-                    onHackEnded?.Invoke();
-                    ResetCameras();
-                }
+        public void DisableCameras()
+        {
+            if (_hacked)
+            {
+                _hacked = false;
+                onHackEnded?.Invoke();
+                ResetCameras();
             }
         }
 
@@ -68,6 +72,7 @@ namespace Game.Scripts.LiveObjects
         {
             if (zoneID == 3 && _hacked == false) //Hacking terminal
             {
+                _hackingInProgress = true;
                 _progressBar.gameObject.SetActive(true);
                 StartCoroutine(HackingRoutine());
                 onHackComplete?.Invoke();
@@ -80,7 +85,7 @@ namespace Game.Scripts.LiveObjects
             {
                 if (_hacked == true)
                     return;
-
+                _hackingInProgress = false;
                 StopAllCoroutines();
                 _progressBar.gameObject.SetActive(false);
                 _progressBar.value = 0;
@@ -91,7 +96,7 @@ namespace Game.Scripts.LiveObjects
         
         IEnumerator HackingRoutine()
         {
-            while (_progressBar.value < 1)
+            while (_progressBar.value < 1 && _hackingInProgress)
             {
                 _progressBar.value += Time.deltaTime / _hackTime;
                 yield return new WaitForEndOfFrame();
@@ -100,6 +105,8 @@ namespace Game.Scripts.LiveObjects
             //successfully hacked
             _hacked = true;
             _interactableZone.CompleteTask(3);
+            _inputManager.AssignLaptop(this);
+            _inputManager.InitializeCameraInputs();
 
             //hide progress bar
             _progressBar.gameObject.SetActive(false);

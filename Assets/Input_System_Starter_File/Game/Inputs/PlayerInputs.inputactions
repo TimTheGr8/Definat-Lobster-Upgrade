@@ -13,6 +13,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "24f6edfe-8494-4557-8fb2-2a8f4edfc36d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -70,6 +79,65 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "ae04f127-55a9-4270-98b8-04429701ec34",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "SecurityCameras",
+            "id": "d0d62bdf-52d1-47f6-b5f1-d2c4592357b0",
+            "actions": [
+                {
+                    "name": "SwitchCameras",
+                    "type": "Button",
+                    "id": "8d373023-6dbf-4657-90c6-3e9a33340097",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DisableCameras",
+                    "type": "Button",
+                    "id": "9fe94ff8-d450-4728-966b-a772de636bcf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "2c931d1c-7700-4d74-9914-cf292b5aa51f",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchCameras",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5120927d-f03e-441d-a380-af89978b4a38",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DisableCameras",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
