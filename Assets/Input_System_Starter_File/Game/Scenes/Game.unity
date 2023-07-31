@@ -19023,6 +19023,7 @@ MonoBehaviour:
   _propAnim: {fileID: 181193216}
   _droneCam: {fileID: 106664337}
   _interactableZone: {fileID: 1810029383}
+  _inputManager: {fileID: 1467717945}
 --- !u!65 &1073608671
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -27683,6 +27684,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 359860633}
+  _drone: {fileID: 0}
 --- !u!4 &1467717946
 Transform:
   m_ObjectHideFlags: 0

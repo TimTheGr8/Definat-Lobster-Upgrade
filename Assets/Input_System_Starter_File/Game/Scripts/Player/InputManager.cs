@@ -10,6 +10,8 @@ public class InputManager : MonoBehaviour
 
     [SerializeField]
     private Player _player;
+    [SerializeField]
+    private Drone _drone;
 
     private PlayerInputs _input;
     private InteractableZone _interactableZone;
@@ -24,11 +26,27 @@ public class InputManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var move = _input.Player.Movement.ReadValue<Vector2>();
-        _player.CalcutateMovement(move);
+        var playerMove = _input.Player.Movement.ReadValue<Vector2>();
+        _player.CalcutateMovement(playerMove);
+
+        if (_drone != null)
+        {
+            var droneMove = _input.Drone.Movement.ReadValue<Vector2>();
+            _drone.TiltDrone(droneMove.y);
+            _drone.RotateDrone(droneMove.x);
+        }
     }
 
-    // Main Player Controls
+    private void FixedUpdate()
+    {
+        if (_drone != null)
+        {
+            var droneVertical = _input.Drone.Thrust.ReadValue<float>();
+            _drone.SetVerticalDirection(droneVertical);
+        }
+    }
+
+    // Main Player Inputs
     private void InitializePlayerInputs()
     {
         _input = new PlayerInputs();
@@ -68,7 +86,7 @@ public class InputManager : MonoBehaviour
         _interactableZone = interactable;
     }
 
-    // Security Camera Controls
+    // Security Camera Inputs
     public void InitializeCameraInputs()
     {
         _input.Player.Disable();
@@ -86,12 +104,34 @@ public class InputManager : MonoBehaviour
     private void DisableCameras_performed(InputAction.CallbackContext context)
     {
         _laptop.DisableCameras();
+        _input.SecurityCameras.Disable();
         InitializePlayerInputs();
     }
 
     private void SwitchCameras_performed(InputAction.CallbackContext context)
     {
         _laptop.SwitchCamera();
+    }
+
+    // Drone Inputs
+    public void InitializeDroneInputs()
+    {
+        _input.Player.Disable();
+        _input.Drone.Enable();
+
+        _input.Drone.DiableDroneInputs.performed += DiableDroneInputs_performed;
+    }
+
+    public void AssignDrone(Drone drone)
+    {
+        _drone = drone;
+    }
+
+    private void DiableDroneInputs_performed(InputAction.CallbackContext context)
+    {
+        _drone.DisableDrone();
+        _input.Drone.Disable();
+        InitializePlayerInputs();
     }
 }
 

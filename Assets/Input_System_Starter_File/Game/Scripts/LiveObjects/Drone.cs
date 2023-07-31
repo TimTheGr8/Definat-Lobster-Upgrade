@@ -25,10 +25,14 @@ namespace Game.Scripts.LiveObjects
         private CinemachineVirtualCamera _droneCam;
         [SerializeField]
         private InteractableZone _interactableZone;
+        [SerializeField]
+        private InputManager _inputManager;
         
 
         public static event Action OnEnterFlightMode;
         public static event Action onExitFlightmode;
+
+        private float _verticalDirection = 0;
 
         private void OnEnable()
         {
@@ -45,6 +49,8 @@ namespace Game.Scripts.LiveObjects
                 OnEnterFlightMode?.Invoke();
                 UIManager.Instance.DroneView(true);
                 _interactableZone.CompleteTask(4);
+                _inputManager.AssignDrone(this);
+                _inputManager.InitializeDroneInputs();
             }
         }
 
@@ -55,70 +61,54 @@ namespace Game.Scripts.LiveObjects
             UIManager.Instance.DroneView(false);            
         }
 
-        private void Update()
-        {
-            if (_inFlightMode)
-            {
-                CalculateTilt();
-                CalculateMovementUpdate();
-
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    _inFlightMode = false;
-                    onExitFlightmode?.Invoke();
-                    ExitFlightMode();
-                }
-            }
-        }
-
         private void FixedUpdate()
         {
             _rigidbody.AddForce(transform.up * (9.81f), ForceMode.Acceleration);
             if (_inFlightMode)
-                CalculateMovementFixedUpdate();
+                CalculateMovementFixedUpdate(_verticalDirection);
         }
 
-        private void CalculateMovementUpdate()
+        public void RotateDrone (float input)
         {
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                var tempRot = transform.localRotation.eulerAngles;
+            var tempRot = transform.localRotation.eulerAngles;
+            if(input < 0)
                 tempRot.y -= _speed / 3;
-                transform.localRotation = Quaternion.Euler(tempRot);
-            }
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                var tempRot = transform.localRotation.eulerAngles;
+            if (input > 0)
                 tempRot.y += _speed / 3;
-                transform.localRotation = Quaternion.Euler(tempRot);
-            }
+            transform.localRotation = Quaternion.Euler(tempRot);
         }
 
-        private void CalculateMovementFixedUpdate()
+        public void SetVerticalDirection(float direction)
         {
-            
-            if (Input.GetKey(KeyCode.Space))
-            {
-                _rigidbody.AddForce(transform.up * _speed, ForceMode.Acceleration);
-            }
-            if (Input.GetKey(KeyCode.V))
-            {
-                _rigidbody.AddForce(-transform.up * _speed, ForceMode.Acceleration);
-            }
+            _verticalDirection = direction;
         }
 
-        private void CalculateTilt()
+        private void CalculateMovementFixedUpdate(float direction)
         {
-            if (Input.GetKey(KeyCode.A)) 
-                transform.rotation = Quaternion.Euler(00, transform.localRotation.eulerAngles.y, 30);
-            else if (Input.GetKey(KeyCode.D))
-                transform.rotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y, -30);
-            else if (Input.GetKey(KeyCode.W))
+            _rigidbody.AddForce((transform.up * direction) * _speed, ForceMode.Acceleration);
+        }
+
+        public void TiltDrone(float value)
+        {
+            if(value < 0)
+            {
                 transform.rotation = Quaternion.Euler(30, transform.localRotation.eulerAngles.y, 0);
-            else if (Input.GetKey(KeyCode.S))
+            }
+            else if(value > 0)
+            {
                 transform.rotation = Quaternion.Euler(-30, transform.localRotation.eulerAngles.y, 0);
-            else 
+            }
+            else
+            {
                 transform.rotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y, 0);
+            }
+        }
+
+        public void DisableDrone()
+        {
+            _inFlightMode = false;
+            onExitFlightmode?.Invoke();
+            ExitFlightMode();
         }
 
         private void OnDisable()
