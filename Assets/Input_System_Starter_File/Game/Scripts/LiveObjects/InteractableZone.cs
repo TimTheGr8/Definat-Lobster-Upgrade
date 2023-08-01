@@ -78,8 +78,8 @@ namespace Game.Scripts.LiveObjects
                                 string message = $"Press the E key to {_displayMessage}";
                                 UIManager.Instance.DisplayInteractableZoneMessage(true, message);
                             }
-                            //else
-                                //UIManager.Instance.DisplayInteractableZoneMessage(true, $"Press the {_zoneKeyInput.ToString()} key to collect");
+                            else
+                                UIManager.Instance.DisplayInteractableZoneMessage(true, $"Press the E key to perform action");
                         }
                         break;
 
@@ -92,8 +92,8 @@ namespace Game.Scripts.LiveObjects
                                 string message = $"Press the E key to {_displayMessage}";
                                 UIManager.Instance.DisplayInteractableZoneMessage(true, message);
                             }
-                            //else
-                                //UIManager.Instance.DisplayInteractableZoneMessage(true, $"Press the {_zoneKeyInput.ToString()} key to perform action");
+                            else
+                                UIManager.Instance.DisplayInteractableZoneMessage(true, $"Press the E key to perform action");
                         }
                         break;
 
@@ -104,8 +104,8 @@ namespace Game.Scripts.LiveObjects
                             string message = $"Hold the E key to {_displayMessage}";
                             UIManager.Instance.DisplayInteractableZoneMessage(true, message);
                         }
-                        //else
-                            //UIManager.Instance.DisplayInteractableZoneMessage(true, $"Hold the {_zoneKeyInput.ToString()} key to perform action");
+                        else
+                            UIManager.Instance.DisplayInteractableZoneMessage(true, $"Hold the E key to perform action");
                         break;
                 }
             }
@@ -128,6 +128,14 @@ namespace Game.Scripts.LiveObjects
                         break;
 
                     case ZoneType.Action:
+                        if (_actionPerformed == false)
+                        {
+                            PerformAction();
+                            _actionPerformed = true;
+                            UIManager.Instance.DisplayInteractableZoneMessage(false);
+                        }
+                        break;
+                    case ZoneType.HoldAction:
                         if (_actionPerformed == false)
                         {
                             PerformAction();

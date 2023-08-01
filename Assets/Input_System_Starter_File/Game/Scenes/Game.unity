@@ -6648,13 +6648,14 @@ MonoBehaviour:
   _leftWheel: {fileID: 70192374}
   _rightWheel: {fileID: 1990168176}
   _rearWheels: {fileID: 70192374}
-  _liftLowerLimit: {x: 0, y: 0.6, z: 1.47}
+  _liftLowerLimit: {x: 0, y: 0.7, z: 1.47}
   _liftUpperLimit: {x: 0, y: 2.25, z: 1.47}
   _speed: 2
   _liftSpeed: 1
   _forkliftCam: {fileID: 972744896}
   _driverModel: {fileID: 1509951838}
   _interactableZone: {fileID: 1277958656}
+  _inputManager: {fileID: 1467717945}
 --- !u!65 &402105200
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11830,7 +11831,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 77.0313, y: -61.2569}
+  m_AnchoredPosition: {x: 77.027, y: -61.257}
   m_SizeDelta: {x: 154.054, y: 122.5145}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &663670463

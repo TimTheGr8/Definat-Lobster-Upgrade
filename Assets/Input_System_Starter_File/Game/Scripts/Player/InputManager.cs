@@ -16,6 +16,7 @@ public class InputManager : MonoBehaviour
     private PlayerInputs _input;
     private InteractableZone _interactableZone;
     private Laptop _laptop;
+    private Forklift _forklift;
 
     // Start is called before the first frame update
     void Start()
@@ -35,12 +36,21 @@ public class InputManager : MonoBehaviour
             _drone.TiltDrone(droneMove.y);
             _drone.RotateDrone(droneMove.x);
         }
+
+        if(_forklift != null)
+        {
+            var forkliftMove = _input.Forklift.Movement.ReadValue<Vector2>();
+            _forklift.Move(forkliftMove);
+            var mastMovement = _input.Forklift.Forks.ReadValue<float>();
+            _forklift.LiftRoutine(mastMovement);
+        }
     }
 
     private void FixedUpdate()
     {
         if (_drone != null)
         {
+            // TODO: use this for the forklift mast
             var droneVertical = _input.Drone.Thrust.ReadValue<float>();
             _drone.SetVerticalDirection(droneVertical);
         }
@@ -131,7 +141,32 @@ public class InputManager : MonoBehaviour
     {
         _drone.DisableDrone();
         _input.Drone.Disable();
+        _drone = null;
         InitializePlayerInputs();
     }
+
+    // Forklift Inputs
+    public void InitializeForkliftInputs()
+    {
+        _input.Player.Disable();
+        _input.Forklift.Enable();
+
+        _input.Forklift.DisableForkliftInputs.performed += DisableForkliftInputs_performed;
+    }
+
+    private void DisableForkliftInputs_performed(InputAction.CallbackContext obj)
+    {
+        _input.Forklift.Disable();
+        _forklift.DisableForkiftInputs();
+        _forklift = null;
+        InitializePlayerInputs();
+    }
+
+    public void AssignForklift(Forklift forklift)
+    {
+        _forklift = forklift;
+    }
+
+
 }
 
