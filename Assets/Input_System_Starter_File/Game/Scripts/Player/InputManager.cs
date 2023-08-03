@@ -50,7 +50,6 @@ public class InputManager : MonoBehaviour
     {
         if (_drone != null)
         {
-            // TODO: use this for the forklift mast
             var droneVertical = _input.Drone.Thrust.ReadValue<float>();
             _drone.SetVerticalDirection(droneVertical);
         }

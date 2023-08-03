@@ -149,12 +149,9 @@ namespace Game.Scripts.LiveObjects
 
         public void InteractionStarted()
         {
-
-            switch (_zoneType)
+            if(_zoneType == ZoneType.HoldAction || CurrentZoneID == 6)
             {
-                case ZoneType.HoldAction:
-                    PerformHoldAction();
-                    break;
+                PerformHoldAction();
             }
         }
 
